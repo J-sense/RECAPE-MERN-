@@ -14,6 +14,32 @@ const studentCreate = async (req: Request, res: Response) => {
     console.log(error);
   }
 };
+const getSingleStudent = async (req: Request, res: Response) => {
+  try {
+    const id = req.params.id;
+    const result = await studentService.getSingleStudent(id);
+    res.status(200).json({
+      success: true,
+      message: 'Student create successfully',
+      data: result,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+const deleteStudent = async (req: Request, res: Response) => {
+  try {
+    const id = req.params.id;
+    const result = await studentService.deleteStudent(id);
+    res.status(200).json({
+      success: true,
+      message: 'Student deleted succ',
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
 export const studentController = {
   studentCreate,
+  getSingleStudent,
 };

@@ -86,6 +86,10 @@ const studentSchema = new Schema<Student>({
   localGuardian: localGuradianSchema,
   profileImg: { type: String },
   isActive: ['active', 'blocked'],
+  isDeleted: {
+    type: Boolean,
+    default: false,
+  },
 });
 studentSchema.pre('save', async function (next) {
   const user = this;
