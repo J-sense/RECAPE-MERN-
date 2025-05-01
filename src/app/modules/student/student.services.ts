@@ -1,16 +1,16 @@
-import { Student } from './student.interface';
-import { StudentModel } from './student.model';
+import { TStudent } from './student.interface';
+import { Student } from './student.model';
 
-const createStudent = async (studentData: Student) => {
-  const result = await StudentModel.create(studentData);
+const createStudent = async (studentData: TStudent) => {
+  const result = await Student.create(studentData);
   return result;
 };
 const getSingleStudent = async (id: string) => {
-  const result = await StudentModel.findOne({ id });
+  const result = await Student.findOne({ id });
   return result;
 };
 const deleteStudent = async (id: string) => {
-  const result = await StudentModel.updateOne({ id }, { isDeleted: true });
+  const result = await Student.updateOne({ id }, { isDeleted: true });
   return result;
 };
 export const studentService = {

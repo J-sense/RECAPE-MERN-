@@ -20,7 +20,7 @@ const getSingleStudent = async (req: Request, res: Response) => {
     const result = await studentService.getSingleStudent(id);
     res.status(200).json({
       success: true,
-      message: 'Student create successfully',
+      message: 'Get single Student',
       data: result,
     });
   } catch (error) {
@@ -33,7 +33,7 @@ const deleteStudent = async (req: Request, res: Response) => {
     const result = await studentService.deleteStudent(id);
     res.status(200).json({
       success: true,
-      message: 'Student deleted succ',
+      message: 'Student deleted successfully',
     });
   } catch (error) {
     console.log(error);
