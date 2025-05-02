@@ -2,11 +2,8 @@ import { Response, Request, NextFunction, RequestHandler } from 'express';
 import { UserServices } from './user.services';
 import { sendResponse } from '../../utilis/sendResponse';
 import status from 'http-status';
-const catchAsync = (fn: RequestHandler) => {
-  return (req: Request, res: Response, next: NextFunction) => {
-    Promise.resolve(fn(req, res, next)).catch((error) => next(error));
-  };
-};
+import { catchAsync } from '../../utilis/carchAsync';
+
 const createStudent = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { password, student } = req.body;
