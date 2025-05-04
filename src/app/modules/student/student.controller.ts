@@ -1,5 +1,8 @@
 import { Request, Response } from 'express';
 import { studentService } from './student.services';
+import { catchAsync } from '../../utilis/carchAsync';
+import { sendResponse } from '../../utilis/sendResponse';
+import status from 'http-status';
 
 const studentCreate = async (req: Request, res: Response) => {
   try {
@@ -39,7 +42,17 @@ const deleteStudent = async (req: Request, res: Response) => {
     console.log(error);
   }
 };
+const getAllStudent = catchAsync(async (req: Request, res: Response) => {
+  const result = await studentService.getAllStudent();
+  sendResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: 'All Student retrieved successfully',
+    data: result,
+  });
+});
 export const studentController = {
   studentCreate,
   getSingleStudent,
+  getAllStudent,
 };
