@@ -31,16 +31,14 @@ const getSingleStudent = async (req: Request, res: Response) => {
   }
 };
 const deleteStudent = async (req: Request, res: Response) => {
-  try {
-    const id = req.params.id;
-    const result = await studentService.deleteStudent(id);
-    res.status(200).json({
-      success: true,
-      message: 'Student deleted successfully',
-    });
-  } catch (error) {
-    console.log(error);
-  }
+  const id = req.params.id;
+  const result = await studentService.deleteStudent(id);
+  sendResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: 'Student deleted successfully',
+    data: result,
+  });
 };
 const getAllStudent = catchAsync(async (req: Request, res: Response) => {
   const result = await studentService.getAllStudent();
@@ -55,4 +53,5 @@ export const studentController = {
   studentCreate,
   getSingleStudent,
   getAllStudent,
+  deleteStudent,
 };

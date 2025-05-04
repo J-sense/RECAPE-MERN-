@@ -1,4 +1,5 @@
 import { Schema, model } from 'mongoose';
+import status from 'http-status';
 import {
   StudentModel,
   TGuardian,
@@ -6,6 +7,7 @@ import {
   TStudent,
   TUserName,
 } from './student.interface';
+import AppError from '../../error';
 
 const userNameSchema = new Schema<TUserName>({
   firstName: {
@@ -157,6 +159,15 @@ const studentSchema = new Schema<TStudent, StudentModel>(
 );
 
 // virtual
+studentSchema.pre('save', async function (next) {
+  const isExist = await Student.findOne({
+    email: this.email,
+  });
+  if (isExist) {
+    throw new AppError(status.BAD_REQUEST, 'Email is already exist');
+  }
+  next();
+});
 studentSchema.virtual('fullName').get(function () {
   return this.name.firstName + this.name.middleName + this.name.lastName;
 });

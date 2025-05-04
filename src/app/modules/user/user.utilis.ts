@@ -28,7 +28,7 @@ const generatedId = async (payload: TAcademicSemester) => {
     lastStudentYear == currentStudentYear &&
     lastStudentCode == currentStudentCode
   ) {
-    currentId = lastStudentId.substring(4, 6);
+    currentId = lastStudentId.substring(6);
   }
 
   let incrementId = (Number(currentId) + 1).toString().padStart(4, '0');
