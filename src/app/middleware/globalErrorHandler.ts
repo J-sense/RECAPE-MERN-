@@ -1,5 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { ZodError } from 'zod';
+import handleZodError from '../error/hadleZodError';
+import handleCastError from '../error/handleCastError';
 export type TerrorSource = {
   path: string | null;
   message: string;
@@ -20,24 +22,14 @@ const globalErrorHandler = (
       message: 'Something went wrong',
     },
   ];
-  const handleZodError = (err: ZodError) => {
-    const errorSources = err.issues.map((issue) => {
-      return {
-        path: issue?.path[issue?.path.length - 1] as string,
-        message: issue?.message,
-      };
-    });
-    const statuscode = 400;
-    const message = 'Validation Error';
-    return {
-      statuscode,
-      message,
-      errorSources,
-    };
-  };
 
   if (err instanceof ZodError) {
     const simplifiedError = handleZodError(err);
+    statusCode = simplifiedError.statuscode;
+    message = simplifiedError.message;
+    errorSource = simplifiedError.errorSources;
+  } else if (err.name === 'CastError') {
+    const simplifiedError = handleCastError(err);
     statusCode = simplifiedError.statuscode;
     message = simplifiedError.message;
     errorSource = simplifiedError.errorSources;
@@ -46,6 +38,7 @@ const globalErrorHandler = (
     success,
     message,
     errorSource,
+    stack: err?.stack ? err.stack : null,
   });
 };
 
