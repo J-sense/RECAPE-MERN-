@@ -11,18 +11,25 @@ const createStudent = async (studentData: TStudent) => {
 };
 const getAllStudent = async (query: Record<string, unknown>) => {
   // {email:{$regex: query.searchTerm,$options:1}}
+  const queryObj = { ...query };
+
   let searchTerm = '';
   if (query?.searchTerm) {
     searchTerm = query?.searchTerm as string;
   }
-  const result = await Student.find({
+  const excludes = ['searchTerm'];
+  excludes.forEach((el) => delete queryObj[el]);
+  const searchQuery = Student.find({
     $or: ['email', 'presentAddress', 'name.firstName'].map((field) => ({
       [field]: {
         $regex: searchTerm,
         $options: 'i',
       },
     })),
-  })
+  });
+
+  const filterQuery = searchQuery
+    .find(queryObj)
     .populate('admissionSemester')
     .populate({
       path: 'academicDepartment',
@@ -30,8 +37,14 @@ const getAllStudent = async (query: Record<string, unknown>) => {
         path: 'academicFaculty',
       },
     });
-  return result;
+  let sort = '-createdAt';
+  if (query?.sort) {
+    sort = query.sort as string;
+  }
+  const sorting = await filterQuery.sort(sort);
+  return sorting;
 };
+
 const getSingleStudent = async (id: string) => {
   const result = await Student.findOne({ id });
   return result;
