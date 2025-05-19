@@ -8,6 +8,7 @@ const academicDepartmentSchema = new Schema<TAcademicDepartment>(
     name: {
       type: String,
       required: true,
+      unique: true,
     },
     academicFaculty: {
       type: Schema.Types.ObjectId,
@@ -19,15 +20,15 @@ const academicDepartmentSchema = new Schema<TAcademicDepartment>(
     timestamps: true,
   },
 );
-academicDepartmentSchema.pre('save', async function (next) {
-  const isAlreadyExist = await AcademicDepartment.findOne({
-    name: this.name,
-  });
-  if (isAlreadyExist) {
-    throw new AppError(status.CONFLICT, 'This department does not exist');
-  }
-  next();
-});
+// academicDepartmentSchema.pre('save', async function (next) {
+//   const isAlreadyExist = await AcademicDepartment.findOne({
+//     name: this.name,
+//   });
+//   if (isAlreadyExist) {
+//     throw new AppError(status.CONFLICT, 'This department does not exist');
+//   }
+//   next();
+// });
 academicDepartmentSchema.pre('findOneAndUpdate', async function (next) {
   const query = this.getQuery();
   const isExist = await this.model.findOne(query);

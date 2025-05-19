@@ -41,7 +41,7 @@ const deleteStudent = async (req: Request, res: Response) => {
   });
 };
 const getAllStudent = catchAsync(async (req: Request, res: Response) => {
-  const result = await studentService.getAllStudent();
+  const result = await studentService.getAllStudent(req.query);
   sendResponse(res, {
     statusCode: status.OK,
     success: true,

@@ -9,8 +9,20 @@ const createStudent = async (studentData: TStudent) => {
   const result = await Student.create(studentData);
   return result;
 };
-const getAllStudent = async () => {
-  const result = await Student.find()
+const getAllStudent = async (query: Record<string, unknown>) => {
+  // {email:{$regex: query.searchTerm,$options:1}}
+  let searchTerm = '';
+  if (query?.searchTerm) {
+    searchTerm = query?.searchTerm as string;
+  }
+  const result = await Student.find({
+    $or: ['email', 'presentAddress', 'name.firstName'].map((field) => ({
+      [field]: {
+        $regex: searchTerm,
+        $options: 'i',
+      },
+    })),
+  })
     .populate('admissionSemester')
     .populate({
       path: 'academicDepartment',
