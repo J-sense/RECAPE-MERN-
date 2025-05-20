@@ -1,9 +1,11 @@
 import config from '../../config';
 import AcademicSemester from '../AcademinSenmester/acSemester.model';
+import { TFaculty } from '../faculty/faculty.interface';
+import { Faculty } from '../faculty/faculty.model';
 import { TStudent } from '../student/student.interface';
 import { Student } from '../student/student.model';
 import { User } from './user.model';
-import generatedId from './user.utilis';
+import { generatedId, generatedIdForFaculty } from './user.utilis';
 
 type NewUser = {
   password: string;
@@ -38,6 +40,21 @@ const createStudent = async (password: string, studentData: TStudent) => {
     return student;
   }
 };
+const createFacultyIntoDb = async (password: string, facultyData: TFaculty) => {
+  let user: NewUser = { password: '', role: '', id: '' };
+  user.password = password || (config.default_password as string);
+  user.role = 'faculty';
+  user.id = await generatedIdForFaculty();
+
+  const result = await User.create(user);
+  if (Object.keys(result).length) {
+    facultyData.user = result._id;
+    facultyData.id = result.id;
+    const createFaculty = await Faculty.create(facultyData);
+    return createFaculty;
+  }
+};
 export const UserServices = {
   createStudent,
+  createFacultyIntoDb,
 };

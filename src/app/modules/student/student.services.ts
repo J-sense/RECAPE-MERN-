@@ -10,16 +10,18 @@ const createStudent = async (studentData: TStudent) => {
   return result;
 };
 const getAllStudent = async (query: Record<string, unknown>) => {
-  // {email:{$regex: query.searchTerm,$options:1}}
   const queryObj = { ...query };
 
   let searchTerm = '';
   if (query?.searchTerm) {
     searchTerm = query?.searchTerm as string;
   }
-  const excludes = ['searchTerm'];
+
+  const excludes = ['searchTerm', 'sort', 'limit', 'page', 'skip'];
   excludes.forEach((el) => delete queryObj[el]);
-  const searchQuery = Student.find({
+
+  // Build the base query
+  let dbQuery = Student.find({
     $or: ['email', 'presentAddress', 'name.firstName'].map((field) => ({
       [field]: {
         $regex: searchTerm,
@@ -28,21 +30,40 @@ const getAllStudent = async (query: Record<string, unknown>) => {
     })),
   });
 
-  const filterQuery = searchQuery
-    .find(queryObj)
-    .populate('admissionSemester')
-    .populate({
-      path: 'academicDepartment',
-      populate: {
-        path: 'academicFaculty',
-      },
-    });
+  // Apply filters
+  dbQuery = dbQuery.find(queryObj);
+
+  // Apply population
+  dbQuery = dbQuery.populate('admissionSemester').populate({
+    path: 'academicDepartment',
+    populate: {
+      path: 'academicFaculty',
+    },
+  });
+
+  // Apply sorting
   let sort = '-createdAt';
   if (query?.sort) {
     sort = query.sort as string;
   }
-  const sorting = await filterQuery.sort(sort);
-  return sorting;
+  dbQuery = dbQuery.sort(sort);
+
+  // Execute the query
+  let limit = 1;
+  let page = 1;
+  let skip = 0;
+  if (query?.limit) {
+    limit = query.limit as number;
+  }
+  if (query?.page || query.skip) {
+    page = Number(query.page);
+    skip = Number(query?.skip);
+    skip = (page - 1) * limit;
+  }
+  dbQuery = dbQuery.skip(skip);
+  const result = await dbQuery.limit(limit);
+
+  return result;
 };
 
 const getSingleStudent = async (id: string) => {
