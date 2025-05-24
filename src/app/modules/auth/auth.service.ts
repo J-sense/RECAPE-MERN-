@@ -44,7 +44,39 @@ const login = async (payload: TLogin) => {
     needsPasswordChange: isUserExist?.needsPasswordChange,
   };
 };
-
+const changePassword = async (
+  user: any,
+  payload: {
+    oldPassword: string;
+    newPassword: string;
+  },
+) => {
+  const loggedUser = await User.isUserExists(user.userId);
+  const isPasswordMatch = bcrypt.compare(
+    loggedUser.password as string,
+    payload.oldPassword,
+  );
+  if (!isPasswordMatch) {
+    throw new AppError(status.NOT_FOUND, 'Password does not matched');
+  }
+  const hashPassword = await bcrypt.hash(
+    payload?.newPassword,
+    Number(config.bcrypt_salt_round),
+  );
+  const findUserAndUpdate = await User.findOneAndUpdate(
+    {
+      id: loggedUser.id,
+      role: loggedUser.role,
+    },
+    {
+      password: hashPassword,
+      needsPasswordChange: false,
+    },
+  );
+  console.log(findUserAndUpdate);
+  return null;
+};
 export const authService = {
   login,
+  changePassword,
 };
