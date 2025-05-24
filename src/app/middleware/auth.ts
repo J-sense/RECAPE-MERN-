@@ -12,10 +12,10 @@ const auth = () => {
       throw new AppError(status.UNAUTHORIZED, 'You are not authorized');
     }
     jwt.verify(token, config.jwt_access as string, function (err, decode) {
-      const { userId, userRole } = decode as JwtPayload;
-      console.log(userId, userRole);
-      next();
+      //   const { userId, userRole } = decode as JwtPayload;
+      req.user = decode as JwtPayload;
     });
+    next();
   });
 };
 export default auth;
