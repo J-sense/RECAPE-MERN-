@@ -4,6 +4,7 @@ import { User } from '../user/user.model';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import config from '../../config';
+import { createToken } from './auth.utilis';
 type TLogin = {
   id: string;
   password: string;
@@ -36,11 +37,19 @@ const login = async (payload: TLogin) => {
     userId: isUserExist?.id,
     userRole: isUserExist?.role,
   };
-  const accessToken = jwt.sign(jwtPayload, config.jwt_access as string, {
-    expiresIn: '10d',
-  });
+  const accessToken = createToken(
+    jwtPayload,
+    config.jwt_access as string,
+    Number(config.jwt_access_expires_in),
+  );
+  const refreshToken = createToken(
+    jwtPayload,
+    config.jwt_refresh as string,
+    Number(config.jwt_refresh_expires_in),
+  );
   return {
     accessToken,
+    refreshToken,
     needsPasswordChange: isUserExist?.needsPasswordChange,
   };
 };
