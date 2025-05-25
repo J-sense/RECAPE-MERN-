@@ -20,6 +20,9 @@ const userSchema = new Schema<TUser, UserModelType>(
       type: String,
       enum: ['student', 'faculty', 'admin'],
     },
+    changePasswordAt: {
+      type: Date,
+    },
     status: {
       type: String,
       enum: ['in-progress', 'blocked'],
@@ -44,5 +47,12 @@ userSchema.pre('save', async function (next) {
 });
 userSchema.statics.isUserExists = async function (id: string) {
   return await User.findOne({ id });
+};
+userSchema.statics.isPasswordTimeChanged = async function (
+  iat: number,
+  changePassAt: Date,
+) {
+  const convertartchangepassAt = new Date(changePassAt).getTime() / 1000;
+  return convertartchangepassAt > iat;
 };
 export const User = model<TUser, UserModelType>('User', userSchema);

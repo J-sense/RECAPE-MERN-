@@ -7,6 +7,7 @@ export interface TUser {
   role: 'admin' | 'student' | 'faculty';
   status: 'in-progress' | 'blocked';
   isDeleted: boolean;
+  changePasswordAt?: Date;
 }
 export type NewUser = {
   password: string;
@@ -15,4 +16,5 @@ export type NewUser = {
 };
 export interface UserModelType extends Model<TUser> {
   isUserExists(id: string): Promise<TUser>;
+  isPasswordTimeChanged(iat: number, changePassAt: Date): boolean;
 }

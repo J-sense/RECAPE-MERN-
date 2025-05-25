@@ -71,6 +71,7 @@ const changePassword = async (
     {
       password: hashPassword,
       needsPasswordChange: false,
+      changePasswordAt: new Date(),
     },
   );
   console.log(findUserAndUpdate);
